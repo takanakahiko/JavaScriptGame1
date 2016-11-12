@@ -1,3 +1,4 @@
+//テスト
 var canvas = document.getElementsByTagName( 'canvas' )[ 0 ];  // キャンバス
 var ctx = canvas.getContext( '2d' ); // コンテクスト
 var W = 300, H = 600;  // キャンバスのサイズ
