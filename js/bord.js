@@ -1,8 +1,7 @@
-var Cell = function(pos,chara){
+var Cell = function(pos){
   this.pos = pos;
   this.cost = -1;
   this.isWall = false;
-  this.character = chara;
 
   this.draw = function(){
     var r = 255 - Math.floor(this.cost * 255);
@@ -16,6 +15,19 @@ var Cell = function(pos,chara){
     ctx.fillStyle = 'rgb('+r+','+g+','+b+')';
     drawBlock(this.pos);
   }
+}
+
+var Item = function(pos){
+  this.pos = pos;
+
+  this.draw = function(){
+    var r = 255;
+    var g = 255;
+    var b = 0;
+
+    ctx.fillStyle = 'rgb('+r+','+g+','+b+')';
+    drawBlock(this.pos);
+  };
 }
 
 var Bord = function(){
@@ -47,6 +59,10 @@ var Bord = function(){
   this.cells[6][3].isWall = true;
   this.cells[7][2].isWall = true;
   this.cells[7][3].isWall = true;
+
+  this.items = [];
+  this.items[0] = new Item(new Position(5,5));
+  this.items[1] = new Item(new Position(7,7));
 
   this.setCost = function(start){
 
@@ -96,7 +112,7 @@ var Bord = function(){
     for(i=0; i<ROWS; i++){
       for(j=0; j<COLS; j++){
         if(this.cells[i][j].cost==-1) this.cells[i][j].cost = max;
-        this.cells[i][j].cost = this.cells[i][j].cost / (max + 0.0001);
+        this.cells[i][j].cost = this.cells[i][j].cost / (max + 0.0);
       }
     }
   }
@@ -106,6 +122,9 @@ var Bord = function(){
       for(j=0; j<COLS; j++){
         this.cells[i][j].draw();
       }
+    }
+    for(var item in this.items){
+      this.items[item].draw();
     }
   };
 
