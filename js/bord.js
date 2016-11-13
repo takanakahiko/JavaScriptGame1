@@ -5,9 +5,9 @@ var Cell = function(pos){
   this.isWall = false;
 
   this.draw = function(){
-    var r = 255 - Math.floor(this.cost * 255);
+    var r = 255 - Math.floor(this.itemCost * 255);
     var g = 0;
-    var b = Math.floor(this.cost * 255);
+    var b = Math.floor(this.itemCost * 255);
 
     if(this.isWall){
       r = g = b = 255;
@@ -101,8 +101,6 @@ var Bord = function(){
     this.normalization();
   }
 
-
-
   this.normalization = function(){
     var max = 0;
     for(i=0; i<ROWS; i++){
@@ -114,6 +112,21 @@ var Bord = function(){
       for(j=0; j<COLS; j++){
         if(this.cells[i][j].cost==-1) this.cells[i][j].cost = max;
         this.cells[i][j].cost = this.cells[i][j].cost / (max + 0.0);
+      }
+    }
+  }
+
+  this.normalizationItemCost = function(){
+    var max = 0;
+    for(i=0; i<ROWS; i++){
+      for(j=0; j<COLS; j++){
+        max = Math.max(this.cells[i][j].itemCost,max);
+      }
+    }
+    for(i=0; i<ROWS; i++){
+      for(j=0; j<COLS; j++){
+        if(this.cells[i][j].itemCost==-1) this.cells[i][j].itemCost = max;
+        this.cells[i][j].itemCost = this.cells[i][j].itemCost / (max + 0.0);
       }
     }
   }
@@ -136,12 +149,50 @@ var Bord = function(){
   };
 
   this.update = function(){
-
+    this.setItemCost();
   };
 
   this.setItemCost = function(){
 
+    var costs = [[]];
+
+    for(var num in this.items){
+
+      var start = this.items[num];
+
+      var searchlist = [];
+      if(start.pos.x < 0 || start.pos.y < 0) return;
+      if(start.pos.x >= COLS || start.pos.y >= ROWS) return;
+      var start2 = start.pos;
+      costs[start2.y][start2.x] = 0;
+      searchlist.push(start2);
+
+      while(searchlist.length){
+        var basePos = searchlist.shift();
+
+        for (var key in direction) {
+          if (!direction.hasOwnProperty(key)) continue;
+          var vec = direction[key];
+          var pos2 = basePos.add(vec);
+          if(!this.inBord(pos2)) continue;
+
+          var serchCell = cost[pos2.y][pos2.x];
+          if(serchCell.itemCost!=-1) continue;
+          if(serchCell.isWall) continue;
+          if(serchCell.itemCost<cell.itemCost+1) continue;
+
+          serchCell.itemCost = cell.itemCost+1;
+          searchlist.push(serchCell);
+        }
+      }
+      this.normalizationItemCost();
+
+    }
   }
+
+  this.inBord = function(pos){
+    return !(pos.x < 0 || pos.y < 0 || pos.x >= COLS || pos.y >= ROWS)
+  };
 
 };
 
