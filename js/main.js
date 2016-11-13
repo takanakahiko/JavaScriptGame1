@@ -35,6 +35,7 @@ function tick(){
   if(input_key_buffer[keys["down"]]) chara.moveStart("down",bord);
 
   chara.update();
+  bord.update();
 
   bord.draw();
   chara.draw();

@@ -1,6 +1,7 @@
 var Cell = function(pos){
   this.pos = pos;
   this.cost = -1;
+  this.itemCost = -1;
   this.isWall = false;
 
   this.draw = function(){
@@ -132,6 +133,14 @@ var Bord = function(){
     if(pos.x < 0 || pos.y < 0) return false;
     if(pos.x >= COLS || pos.y >= ROWS) return false;
     return !this.cells[pos.y][pos.x].isWall;
+  };
+
+  this.update = function(){
+
+  };
+
+  this.setItemCost = function(){
+
   }
 
 };
