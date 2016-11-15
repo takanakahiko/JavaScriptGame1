@@ -63,7 +63,7 @@ var Bord = function(){
 
   this.items = [];
   this.items[0] = new Item(new Position(5,5));
-  this.items[1] = new Item(new Position(7,7));
+  this.items[1] = new Item(new Position(7,18));
 
   this.setCost = function(start){
 
@@ -120,6 +120,7 @@ var Bord = function(){
     var max = 0;
     for(i=0; i<ROWS; i++){
       for(j=0; j<COLS; j++){
+        //this.cells[i][j].itemCost = Math.min(this.cells[i][j].itemCost,8);
         max = Math.max(this.cells[i][j].itemCost,max);
       }
     }
@@ -154,9 +155,17 @@ var Bord = function(){
 
   this.setItemCost = function(){
 
-    var costs = [[]];
+    var itemCosts = [];
 
     for(var num in this.items){
+
+      var costs = [];
+      for(i=0; i<ROWS; i++){
+        costs.push([])
+        for(j=0; j<COLS; j++){
+          costs[i][j] = -1;
+        }
+      }
 
       var start = this.items[num];
 
@@ -169,6 +178,7 @@ var Bord = function(){
 
       while(searchlist.length){
         var basePos = searchlist.shift();
+        var baseCosts = costs[basePos.y][basePos.x];
 
         for (var key in direction) {
           if (!direction.hasOwnProperty(key)) continue;
@@ -176,18 +186,26 @@ var Bord = function(){
           var pos2 = basePos.add(vec);
           if(!this.inBord(pos2)) continue;
 
-          var serchCell = cost[pos2.y][pos2.x];
-          if(serchCell.itemCost!=-1) continue;
+          var serchCell = this.cells[pos2.y][pos2.x];
+          if(costs[pos2.y][pos2.x]!=-1) continue;
           if(serchCell.isWall) continue;
-          if(serchCell.itemCost<cell.itemCost+1) continue;
 
-          serchCell.itemCost = cell.itemCost+1;
-          searchlist.push(serchCell);
+          costs[pos2.y][pos2.x] = baseCosts+1;
+          searchlist.push(pos2);
         }
       }
-      this.normalizationItemCost();
-
+      itemCosts.push(costs.slice());
     }
+    for(i=0; i<ROWS; i++){
+      for(j=0; j<COLS; j++){
+        var min = 20;
+        for(var k in this.items){
+          min = Math.min(itemCosts[k][i][j],min);
+        }
+        this.cells[i][j].itemCost = min;
+      }
+    }
+    this.normalizationItemCost();
   }
 
   this.inBord = function(pos){
