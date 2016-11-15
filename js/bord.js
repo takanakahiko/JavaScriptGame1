@@ -212,6 +212,15 @@ var Bord = function(){
     return !(pos.x < 0 || pos.y < 0 || pos.x >= COLS || pos.y >= ROWS)
   };
 
+  this.removeItem = function(pos){
+    for(var num in this.items){
+      if(this.items[num].pos.equals(pos)){
+        this.items.splice( num, 1 ) ;
+        break;
+      }
+    }
+  }
+
 };
 
 // x, yの部分へマスを描画する処理

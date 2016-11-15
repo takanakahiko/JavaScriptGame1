@@ -21,7 +21,9 @@ function init(){
   bord = new Bord();
 
   chara.moveFinish = function(){
+    console.log(""+chara.pos.x+","+chara.pos.y)
     bord.setCost(new Cell(new Position(chara.pos.x,chara.pos.y)));
+    bord.removeItem(new Position(chara.pos.x,chara.pos.y));
   };
   chara.moveFinish();
 }
@@ -29,13 +31,37 @@ function init(){
 function tick(){
   ctx.clearRect( 0, 0, W, H );  // 一度キャンバスを真っさらにする
 
+  bord.update();
+  var min = bord.cells[chara.pos.y][chara.pos.x].itemCost;
+  for (var key in direction) {
+    if (!direction.hasOwnProperty(key)) continue;
+    var vec = direction[key];
+    var pos2 = chara.pos.add(vec);
+    if(!bord.isMovable(pos2)) continue;
+    var x = pos2.x;
+    var y = pos2.y;
+    min = Math.min(bord.cells[y][x].itemCost,min);
+  }
+  /*
   if(input_key_buffer[keys["left"]] ) chara.moveStart("left",bord);
   if(input_key_buffer[keys["right"]]) chara.moveStart("right",bord);
   if(input_key_buffer[keys["up"]]) chara.moveStart("up",bord);
   if(input_key_buffer[keys["down"]]) chara.moveStart("down",bord);
+  */
+
+  for (var key in direction) {
+    if(bord.cells[chara.pos.y][chara.pos.x].itemCost==min) break;
+    if (!direction.hasOwnProperty(key)) continue;
+    var vec = direction[key];
+    var pos2 = chara.pos.add(vec);
+    if(!bord.isMovable(pos2)) continue;
+    var x = pos2.x;
+    var y = pos2.y;
+    if(bord.cells[y][x].itemCost==min ) chara.moveStart(key,bord);
+  }
 
   chara.update();
-  bord.update();
+  //bord.update();
 
   bord.draw();
   chara.draw();
