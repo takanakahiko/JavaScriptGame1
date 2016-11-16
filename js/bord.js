@@ -198,7 +198,7 @@ var Bord = function(){
     }
     for(i=0; i<ROWS; i++){
       for(j=0; j<COLS; j++){
-        var min = 20;
+        var min = ROWS*COLS;
         for(var k in this.items){
           min = Math.min(itemCosts[k][i][j],min);
         }

@@ -29,7 +29,6 @@ document.onkeyup = function (e){
 // ウィンドウが非アクティブになる瞬間に実行されるイベント
 // ------------------------------------------------------------
 window.onblur = function (){
-	// 配列をクリアする
 	input_key_buffer.length = 0;
 };
 
@@ -37,8 +36,23 @@ window.onblur = function (){
 // キーボードが押されているか調べる関数
 // ------------------------------------------------------------
 function KeyIsDown(key_code){
-
 	if(input_key_buffer[key_code])	return true;
-
 	return false;
 }
+
+
+// ---------------------------------------------------------------------------
+/// マウス
+function onClick(e){
+  var rect = e.target.getBoundingClientRect();
+
+  var x = e.clientX - rect.left;
+  var y = e.clientY - rect.top;
+
+  x = Math.floor(x / BLOCK_W);
+  y = Math.floor(y / BLOCK_H);
+
+  bord.items.push(new Item(new Position(x,y)));
+}
+
+document.getElementsByTagName( 'canvas' )[ 0 ].addEventListener('click',onClick,false);
