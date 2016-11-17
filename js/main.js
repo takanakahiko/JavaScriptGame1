@@ -14,16 +14,20 @@ function drawBlock( pos ) {
 }
 
 var chara;
+var enemy;
 var bord;
 
 function init(){
-  chara = new Character(new Position(0,0));
+  chara = new Character(new Position(0,0),5.0);
+  enemy = new Character(new Position(0,0),4.8);
   bord = new Bord();
 
   chara.moveFinish = function(){
     console.log(""+chara.pos.x+","+chara.pos.y)
-    bord.setCost(new Cell(new Position(chara.pos.x,chara.pos.y)));
     bord.removeItem(new Position(chara.pos.x,chara.pos.y));
+  };
+  enemy.moveFinish = function(){
+    bord.setCost(new Cell(new Position(enemy.pos.x,enemy.pos.y)));
   };
   chara.moveFinish();
 }
@@ -31,45 +35,53 @@ function init(){
 function tick(){
   ctx.clearRect( 0, 0, W, H );  // 一度キャンバスを真っさらにする
 
+  if(input_key_buffer[keys["left"]] ) enemy.moveStart("left",bord);
+  if(input_key_buffer[keys["right"]]) enemy.moveStart("right",bord);
+  if(input_key_buffer[keys["up"]]) enemy.moveStart("up",bord);
+  if(input_key_buffer[keys["down"]]) enemy.moveStart("down",bord);
+
+  var min = bord.cells[chara.pos.y][chara.pos.x].costSum;
+  for (var key in direction) {
+    if (!direction.hasOwnProperty(key)) continue;
+    var vec = direction[key];
+    var pos2 = chara.pos.add(vec);
+    if(!bord.isMovable(pos2)) continue;
+    var x = pos2.x;
+    var y = pos2.y;
+    min = Math.min(bord.cells[y][x].costSum,min);
+  }
+
+  for (var key in direction) {
+    if(bord.cells[chara.pos.y][chara.pos.x].costSum==min) break;
+    if (!direction.hasOwnProperty(key)) continue;
+    var vec = direction[key];
+    var pos2 = chara.pos.add(vec);
+    if(!bord.isMovable(pos2)) continue;
+    var x = pos2.x;
+    var y = pos2.y;
+    if(bord.cells[y][x].costSum==min ) chara.moveStart(key,bord);
+  }
+
   bord.update();
-  var min = bord.cells[chara.pos.y][chara.pos.x].itemCost;
-  for (var key in direction) {
-    if (!direction.hasOwnProperty(key)) continue;
-    var vec = direction[key];
-    var pos2 = chara.pos.add(vec);
-    if(!bord.isMovable(pos2)) continue;
-    var x = pos2.x;
-    var y = pos2.y;
-    min = Math.min(bord.cells[y][x].itemCost,min);
-  }
-  /*
-  if(input_key_buffer[keys["left"]] ) chara.moveStart("left",bord);
-  if(input_key_buffer[keys["right"]]) chara.moveStart("right",bord);
-  if(input_key_buffer[keys["up"]]) chara.moveStart("up",bord);
-  if(input_key_buffer[keys["down"]]) chara.moveStart("down",bord);
-  */
-
-  for (var key in direction) {
-    if(bord.cells[chara.pos.y][chara.pos.x].itemCost==min) break;
-    if (!direction.hasOwnProperty(key)) continue;
-    var vec = direction[key];
-    var pos2 = chara.pos.add(vec);
-    if(!bord.isMovable(pos2)) continue;
-    var x = pos2.x;
-    var y = pos2.y;
-    if(bord.cells[y][x].itemCost==min ) chara.moveStart(key,bord);
-  }
-
   chara.update();
+  enemy.update();
   //bord.update();
 
   bord.draw();
   chara.draw();
+  enemy.draw();
 }
 
 
 // キーボードが押された時に呼び出される関数
 function keyPress( key ) {
+}
+
+function addItem(){
+  var x = Math.floor(Math.random() * COLS);
+  var y = Math.floor(Math.random() * ROWS);
+
+  if(bord.items.length < 4) bord.addItem(x,y);
 }
 
 var interval;  // ゲームタイマー保持用変数
@@ -78,7 +90,9 @@ function newGame() {
   init();  // 盤面をまっさらにする
   //newShape();  // 新しい
   //lose = false;
+  bord.update();
   interval = setInterval( tick, 30 );  // 250ミリ秒ごとにtickという関数を呼び出す
+  setInterval(addItem,1000);
 }
 
 newGame();  // ゲームを開始する

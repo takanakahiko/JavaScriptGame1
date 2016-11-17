@@ -1,5 +1,6 @@
-var Character = function(pos){
+var Character = function(pos,speed){
   this.pos = pos;
+  this.speed = speed;
 
   this.draw = function(){
     ctx.fillStyle = "black";
@@ -24,8 +25,8 @@ var Character = function(pos){
 
   this.move = function(){
     if(this.moveFlag){
-      var moveX = direction[this.moveDirection].x / 5.0;
-      var moveY = direction[this.moveDirection].y / 5.0;
+      var moveX = direction[this.moveDirection].x / speed;
+      var moveY = direction[this.moveDirection].y / speed;
       var moveDifference = new Position(moveX,moveY);
       this.movePos = this.movePos.add(moveDifference);
       if(this.movePos.magnitude() >= direction[this.moveDirection].magnitude() ){

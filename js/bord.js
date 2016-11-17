@@ -2,16 +2,20 @@ var Cell = function(pos){
   this.pos = pos;
   this.cost = -1;
   this.itemCost = -1;
+  this.costSum = 0;
   this.isWall = false;
 
   this.draw = function(){
-    var r = 255 - Math.floor(this.itemCost * 255);
+    var r = 255 - Math.floor(this.costSum * 255);
     var g = 0;
-    var b = Math.floor(this.itemCost * 255);
+    var b = Math.floor(this.costSum * 255);
 
     if(this.isWall){
       r = g = b = 255;
-    }
+    }/*else{
+      ctx.fillStyle = 'rgb(0,0,0)';
+      drawString(this.pos,this.costSum);
+    }*/
 
     ctx.fillStyle = 'rgb('+r+','+g+','+b+')';
     drawBlock(this.pos);
@@ -40,30 +44,61 @@ var Bord = function(){
     }
   }
 
-  this.cells[2][2].isWall = true;
-  this.cells[2][3].isWall = true;
-  this.cells[2][4].isWall = true;
-  this.cells[2][5].isWall = true;
-  this.cells[2][6].isWall = true;
-  this.cells[2][7].isWall = true;
-  this.cells[2][8].isWall = true;
-  this.cells[2][9].isWall = true;
-  this.cells[3][2].isWall = true;
-  this.cells[3][3].isWall = true;
-  this.cells[3][4].isWall = true;
-  this.cells[3][5].isWall = true;
-  this.cells[4][2].isWall = true;
-  this.cells[4][3].isWall = true;
-  this.cells[5][2].isWall = true;
-  this.cells[5][3].isWall = true;
-  this.cells[6][2].isWall = true;
-  this.cells[6][3].isWall = true;
-  this.cells[7][2].isWall = true;
-  this.cells[7][3].isWall = true;
+  this.cells[1][1].isWall = true;
+  this.cells[1][2].isWall = true;
+  this.cells[1][3].isWall = true;
+  this.cells[1][6].isWall = true;
+  this.cells[1][7].isWall = true;
+  this.cells[1][8].isWall = true;
+
+  for(var i = 2; i <= 7; i++){
+    this.cells[i][1].isWall = true;
+    this.cells[i][8].isWall = true;
+  }
+
+  for(var i = 3; i <= 6; i++){
+    this.cells[i][3].isWall = true;
+    this.cells[i][4].isWall = true;
+    this.cells[i][5].isWall = true;
+    this.cells[i][6].isWall = true;
+  }
+
+
+  this.cells[8][1].isWall = true;
+  this.cells[8][2].isWall = true;
+  this.cells[8][3].isWall = true;
+  this.cells[8][6].isWall = true;
+  this.cells[8][7].isWall = true;
+  this.cells[8][8].isWall = true;
+
+  this.cells[10][1].isWall = true;
+  this.cells[10][2].isWall = true;
+  this.cells[10][3].isWall = true;
+  this.cells[10][6].isWall = true;
+  this.cells[10][7].isWall = true;
+  this.cells[10][8].isWall = true;
+
+  for(var i = 11; i <= 17; i++){
+    this.cells[i][1].isWall = true;
+    this.cells[i][8].isWall = true;
+  }
+
+  for(var i = 12; i <= 16; i++){
+    this.cells[i][3].isWall = true;
+    this.cells[i][4].isWall = true;
+    this.cells[i][5].isWall = true;
+    this.cells[i][6].isWall = true;
+  }
+
+  this.cells[18][1].isWall = true;
+  this.cells[18][2].isWall = true;
+  this.cells[18][3].isWall = true;
+  this.cells[18][6].isWall = true;
+  this.cells[18][7].isWall = true;
+  this.cells[18][8].isWall = true;
+
 
   this.items = [];
-  this.items[0] = new Item(new Position(5,5));
-  this.items[1] = new Item(new Position(7,18));
 
   this.setCost = function(start){
 
@@ -151,7 +186,30 @@ var Bord = function(){
 
   this.update = function(){
     this.setItemCost();
+    this.setCostSum();
   };
+
+  this.setCostSum = function(){
+    var max = 0;
+    for(i=0; i<ROWS; i++){
+      for(j=0; j<COLS; j++){
+        var sum = 0;
+
+        var itemRatio = 0.55;
+        var enemyRatio = 0.45;
+        if(this.cells[i][j].cost<0.3){
+          itemRatio = 0.4;
+          enemyRatio = 0.6;
+        }
+
+        var sum = 0.0;
+        sum += (this.cells[i][j].itemCost) * itemRatio;
+        sum += ( - this.cells[i][j].cost + 1) * enemyRatio;
+
+        this.cells[i][j].costSum = sum;
+      }
+    }
+  }
 
   this.setItemCost = function(){
 
@@ -210,7 +268,7 @@ var Bord = function(){
     }
     for(i=0; i<ROWS; i++){
       for(j=0; j<COLS; j++){
-        var min = ROWS*COLS;
+        var min = 1;
         for(var k in this.items){
           min = Math.min(itemCosts[k][i][j],min);
         }
@@ -233,6 +291,16 @@ var Bord = function(){
     }
   }
 
+  this.addItem = function(x,y){
+    var f = true;
+    for(var num in this.items){
+      var itemPos = this.items[num].pos;
+      if(itemPos.x == x && itemPos.y == y) f = false;
+    }
+    if(this.cells[y][x].isWall) f = false;
+    if(f) bord.items.push(new Item(new Position(x,y)));
+  }
+
 };
 
 // x, yの部分へマスを描画する処理
@@ -241,4 +309,11 @@ function drawBlock( pos ) {
   var y = pos.y;
   ctx.fillRect( BLOCK_W * x, BLOCK_H * y, BLOCK_W - 1 , BLOCK_H - 1 );
   ctx.strokeRect( BLOCK_W * x, BLOCK_H * y, BLOCK_W - 1 , BLOCK_H - 1 );
+}
+
+function drawString( pos ,string ) {
+  var x = pos.x;
+  var y = pos.y;
+  ctx.font="10px Georgia";
+  ctx.fillText(string,BLOCK_W * x, BLOCK_H * y);
 }
