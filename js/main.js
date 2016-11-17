@@ -41,6 +41,7 @@ function tick(){
   if(input_key_buffer[keys["down"]]) enemy.moveStart("down",bord);
 
   var min = bord.cells[chara.pos.y][chara.pos.x].costSum;
+  var f = false;
   for (var key in direction) {
     if (!direction.hasOwnProperty(key)) continue;
     var vec = direction[key];
@@ -48,11 +49,13 @@ function tick(){
     if(!bord.isMovable(pos2)) continue;
     var x = pos2.x;
     var y = pos2.y;
+    if ( min != bord.cells[y][x].costSum) f = true;
     min = Math.min(bord.cells[y][x].costSum,min);
   }
 
   for (var key in direction) {
     if(bord.cells[chara.pos.y][chara.pos.x].costSum==min) break;
+    if(!f) break;
     if (!direction.hasOwnProperty(key)) continue;
     var vec = direction[key];
     var pos2 = chara.pos.add(vec);

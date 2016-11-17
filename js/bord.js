@@ -195,11 +195,12 @@ var Bord = function(){
       for(j=0; j<COLS; j++){
         var sum = 0;
 
-        var itemRatio = 0.55;
-        var enemyRatio = 0.45;
+        var itemRatio = 0.6;
+        var enemyRatio = 0.4;
+
         if(this.cells[i][j].cost<0.3){
-          itemRatio = 0.4;
-          enemyRatio = 0.6;
+          itemRatio = 0.2;
+          enemyRatio = 0.8;
         }
 
         var sum = 0.0;
