@@ -52,7 +52,12 @@ function onClick(e){
   x = Math.floor(x / BLOCK_W);
   y = Math.floor(y / BLOCK_H);
 
-  bord.items.push(new Item(new Position(x,y)));
+  var f = true;
+  for(var num in bord.items){
+    var itemPos = bord.items[num].pos;
+    if(itemPos.x == x && itemPos.y == y) f = false;
+  }
+  if(f) bord.items.push(new Item(new Position(x,y)));
 }
 
 document.getElementsByTagName( 'canvas' )[ 0 ].addEventListener('click',onClick,false);

@@ -194,6 +194,18 @@ var Bord = function(){
           searchlist.push(pos2);
         }
       }
+      var max = 0;
+      for(i=0; i<ROWS; i++){
+        for(j=0; j<COLS; j++){
+          max = Math.max(costs[i][j],max);
+        }
+      }
+      for(i=0; i<ROWS; i++){
+        for(j=0; j<COLS; j++){
+          if(costs[i][j]==-1) costs[i][j] = max;
+          costs[i][j]= costs[i][j] / (max + 0.0);
+        }
+      }
       itemCosts.push(costs.slice());
     }
     for(i=0; i<ROWS; i++){
@@ -205,7 +217,7 @@ var Bord = function(){
         this.cells[i][j].itemCost = min;
       }
     }
-    this.normalizationItemCost();
+    //this.normalizationItemCost();
   }
 
   this.inBord = function(pos){
