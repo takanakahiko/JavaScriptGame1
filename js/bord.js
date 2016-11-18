@@ -6,9 +6,11 @@ var Cell = function(pos){
   this.isWall = false;
 
   this.draw = function(){
-    var r = 255 - Math.floor(this.costSum * 255);
+    var b = 255 - Math.floor(this.costSum * 255);
     var g = 0;
-    var b = Math.floor(this.costSum * 255);
+    var r = Math.floor(this.costSum * 255);
+
+    r = g = b = 120;
 
     if(this.isWall){
       r = g = b = 255;
@@ -19,6 +21,22 @@ var Cell = function(pos){
 
     ctx.fillStyle = 'rgb('+r+','+g+','+b+')';
     drawBlock(this.pos);
+
+    /*
+    b = Math.floor(this.cost * 255);
+    g = 0;
+    r = 255 -Math.floor(this.cost * 255);
+    if(this.isWall) r = g = b = 255;
+    ctx2.fillStyle = 'rgb('+r+','+g+','+b+')';
+    drawBlock2(this.pos);
+
+    b = 255 - Math.floor(this.itemCost * 255);
+    g = 0;
+    r = Math.floor(this.itemCost * 255);
+    if(this.isWall) r = g = b = 255;
+    ctx3.fillStyle = 'rgb('+r+','+g+','+b+')';
+    drawBlock3(this.pos);
+    */
   }
 }
 
@@ -153,16 +171,18 @@ var Bord = function(){
 
   this.normalizationItemCost = function(){
     var max = 0;
+    var min = 0;
     for(i=0; i<ROWS; i++){
       for(j=0; j<COLS; j++){
         //this.cells[i][j].itemCost = Math.min(this.cells[i][j].itemCost,8);
         max = Math.max(this.cells[i][j].itemCost,max);
+        min = Math.min(this.cells[i][j].itemCost,min);
       }
     }
     for(i=0; i<ROWS; i++){
       for(j=0; j<COLS; j++){
         if(this.cells[i][j].itemCost==-1) this.cells[i][j].itemCost = max;
-        this.cells[i][j].itemCost = this.cells[i][j].itemCost / (max + 0.0);
+        this.cells[i][j].itemCost = (this.cells[i][j].itemCost - min) / (max - min + 0.0);
       }
     }
   }
@@ -276,7 +296,7 @@ var Bord = function(){
         this.cells[i][j].itemCost = min;
       }
     }
-    //this.normalizationItemCost();
+    this.normalizationItemCost();
   }
 
   this.inBord = function(pos){
@@ -310,6 +330,25 @@ function drawBlock( pos ) {
   var y = pos.y;
   ctx.fillRect( BLOCK_W * x, BLOCK_H * y, BLOCK_W - 1 , BLOCK_H - 1 );
   ctx.strokeRect( BLOCK_W * x, BLOCK_H * y, BLOCK_W - 1 , BLOCK_H - 1 );
+}
+
+var ctx2 = document.getElementsByTagName( 'canvas' )[1].getContext('2d');
+var ctx3 = document.getElementsByTagName( 'canvas' )[2].getContext('2d');
+
+// x, yの部分へマスを描画する処理
+function drawBlock2( pos ) {
+  var x = pos.x;
+  var y = pos.y;
+  ctx2.fillRect( BLOCK_W * x, BLOCK_H * y, BLOCK_W - 1 , BLOCK_H - 1 );
+  ctx2.strokeRect( BLOCK_W * x, BLOCK_H * y, BLOCK_W - 1 , BLOCK_H - 1 );
+}
+
+// x, yの部分へマスを描画する処理
+function drawBlock3( pos ) {
+  var x = pos.x;
+  var y = pos.y;
+  ctx3.fillRect( BLOCK_W * x, BLOCK_H * y, BLOCK_W - 1 , BLOCK_H - 1 );
+  ctx3.strokeRect( BLOCK_W * x, BLOCK_H * y, BLOCK_W - 1 , BLOCK_H - 1 );
 }
 
 function drawString( pos ,string ) {

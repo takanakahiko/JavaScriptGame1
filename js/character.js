@@ -1,9 +1,10 @@
 var Character = function(pos,speed){
   this.pos = pos;
   this.speed = speed;
+  this.color = "black";
 
   this.draw = function(){
-    ctx.fillStyle = "black";
+    ctx.fillStyle = this.color;
     drawBlock(this.pos.add(this.movePos));
   }
 

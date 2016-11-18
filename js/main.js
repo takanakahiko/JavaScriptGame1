@@ -19,8 +19,11 @@ var bord;
 
 function init(){
   chara = new Character(new Position(0,0),5.0);
-  enemy = new Character(new Position(0,0),4.8);
+  enemy = new Character(new Position(9,19),4.8);
   bord = new Bord();
+
+  chara.color = "green";
+  enemy.color = "black";
 
   chara.moveFinish = function(){
     console.log(""+chara.pos.x+","+chara.pos.y)
